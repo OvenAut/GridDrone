@@ -1,6 +1,10 @@
 /*
 <<<<<<< HEAD
+<<<<<<< HEAD
  * SystemJS v0.16.7
+=======
+ * SystemJS v0.16.9
+>>>>>>> origin/master
 =======
  * SystemJS v0.16.9
 >>>>>>> origin/master
@@ -901,6 +905,10 @@ function es6(loader) {
 
   function configNodeGlobal(loader, module, nodeModule, wilcardDummy) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    loader.meta = loader.meta || {};
+>>>>>>> origin/master
 =======
     loader.meta = loader.meta || {};
 >>>>>>> origin/master
@@ -938,8 +946,11 @@ function es6(loader) {
         configNodeGlobal(self, 'babel', 'babel-core/browser.js');
         configNodeGlobal(self, 'babel/external-helpers', 'babel-core/external-helpers.js');
 <<<<<<< HEAD
+<<<<<<< HEAD
         configNodeGlobal(self, 'babel', 'babel/browser.js');
         configNodeGlobal(self, 'babel/external-helpers', 'babel/external-helpers.js');
+=======
+>>>>>>> origin/master
 =======
 >>>>>>> origin/master
         configNodeGlobal(self, 'babel-runtime/*', 'babel-runtime', true);
