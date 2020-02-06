@@ -65,3 +65,10 @@ jspm_packages/github/mrdoob/three.js@master/utils
 
 # sftp configuration file
 sftp-config.json
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
