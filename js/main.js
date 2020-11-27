@@ -8,6 +8,19 @@ import { FXAAShader } from '../node_modules/three/examples/jsm/shaders/FXAAShade
 import { EffectComposer } from '../node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
 import { ShaderPass } from '../node_modules/three/examples/jsm/postprocessing/ShaderPass.js';
 
+
+var params = {
+    speed: 0.01,
+    edgeStrength: 3.0,
+    edgeGlow: 0.0,
+    edgeThickness: 1.0,
+    pulsePeriod: 0,
+    rotate: false,
+    usePatternTexture: false
+};
+
+
+
 var helper = {
     speed: 0.01,
     rotation: new THREE.Vector3(),
@@ -30,8 +43,8 @@ document.body.appendChild(stats.dom);
 
 var scene = new THREE.Scene();
 
-var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 100 );
-camera.position.set( 0, 20, 35 );
+var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 100 );
+camera.position.set( 0, 30, 30 );
 
 
 var renderer = new THREE.WebGLRenderer();
@@ -76,6 +89,8 @@ cube.castShadow = true;
 cube.position.set(0,5,0);
 scene.add( cube );
 
+
+
 //77haha
 
 //var matStdObjects = new THREE.MeshStandardMaterial( { color: 0xA00000, roughness: 0, metalness: 0 } );
@@ -112,8 +127,13 @@ scene.add(grid.group);
 
 
 var controls = new OrbitControls( camera, renderer.domElement );
+controls.minDistance = 5;
+controls.maxDistance = 30;
+controls.enablePan = false;
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+
 controls.target.copy( grid.group.position );
-controls.update();
 
 
 //effectFXAA = new ShaderPass( FXAAShader );
@@ -128,6 +148,8 @@ var animate = function () {
     cube.rotation.y += helper.speed;
  //   mshStdBox.update();
     renderer.render( scene, camera );
+    controls.update();
+
     composer.render();
     stats.end();
     requestAnimationFrame( animate );
