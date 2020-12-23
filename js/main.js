@@ -1,23 +1,13 @@
 import * as THREE from '../node_modules/three/build/three.module.js';
 import Stats from '../node_modules/three/examples/jsm/libs/stats.module.js';
 import { OrbitControls } from '../node_modules/three/examples/jsm/controls/OrbitControls.js';
-import MshStdBox from './modules/mshStdBox.js';
+//import MshStdBox from './modules/mshStdBox.js';
 import * as dat from '../node_modules/three/examples/jsm/libs/dat.gui.module.js';
 import HexGrid from './modules/HexGrid.js';
-import { FXAAShader } from '../node_modules/three/examples/jsm/shaders/FXAAShader.js';
-import { EffectComposer } from '../node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
-import { ShaderPass } from '../node_modules/three/examples/jsm/postprocessing/ShaderPass.js';
+//import { FXAAShader } from '../node_modules/three/examples/jsm/shaders/FXAAShader.js';
+//import { EffectComposer } from '../node_modules/three/examples/jsm/postprocessing/EffectComposer.js';
+//import { ShaderPass } from '../node_modules/three/examples/jsm/postprocessing/ShaderPass.js';
 
-
-var params = {
-    speed: 0.01,
-    edgeStrength: 3.0,
-    edgeGlow: 0.0,
-    edgeThickness: 1.0,
-    pulsePeriod: 0,
-    rotate: false,
-    usePatternTexture: false
-};
 
 
 
@@ -26,16 +16,10 @@ var helper = {
     rotation: new THREE.Vector3(),
 };
 
-var composer, effectFXAA, outlinePass;
-
-console.log(helper);
-console.log(helper.rotation.x);
 
 const gui = new dat.GUI();
 
 gui.add(helper,'speed');
-//gui.add(helper,'rotation.x');
-//console.log(Stats);
 const stats = new Stats();
 stats.showPanel(0);
 document.body.appendChild(stats.dom);
@@ -53,7 +37,7 @@ renderer.shadowMap.enabled = true;
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-composer = new EffectComposer( renderer );
+//composer = new EffectComposer( renderer );
 
 
 var light = new THREE.DirectionalLight( 0xddffdd, 0.6 );
@@ -150,7 +134,7 @@ var animate = function () {
     renderer.render( scene, camera );
     controls.update();
 
-    composer.render();
+ //   composer.render();
     stats.end();
     requestAnimationFrame( animate );
 };
@@ -163,7 +147,7 @@ function onWindowResize(){
     camera.updateProjectionMatrix();
 
     renderer.setSize( window.innerWidth, window.innerHeight );
-    effectFXAA.uniforms[ 'resolution' ].value.set( 1 / window.innerWidth, 1 / window.innerHeight );
+//    effectFXAA.uniforms[ 'resolution' ].value.set( 1 / window.innerWidth, 1 / window.innerHeight );
 
 }
 
