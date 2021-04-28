@@ -12,6 +12,7 @@ class Hex { constructor (size, scale, geometry, color , cell) {
     this.size = size;
     this.FLAT = 0;
     this.POINTY = 30 * 0.0174532925;
+	this.childUuid = null;
 	
 	if (this.type === Hex.FLAT) {
 		this.width = this.size * 2;// * 0.95;
@@ -36,7 +37,21 @@ class Hex { constructor (size, scale, geometry, color , cell) {
 	this.mesh.rotation.set(90 * (Math.PI/180),0,0); // = ;
 	this.mesh.scale.set(scale, scale, scale);
 	this.mesh.receiveShadow = true;
+	this.mesh.echo = function(){
+		
+		console.log(this.childUuid);
+	}
+	this.mesh.setChildUuid = function(uuid){
+		this.childUuid = uuid
+	}
+	this.mesh.getChildUuid = function(){
+		return this.childUuid
+	}
+
+
+	
 }
+
    placeAt(cube) {
 		if (this.type === Hex.FLAT) {
 			this.mesh.position.set(cube.x * this.width * 0.75,0,(cube.z - cube.y) * this.height * 0.5)
@@ -50,6 +65,8 @@ class Hex { constructor (size, scale, geometry, color , cell) {
 		}
 		//this.cell = cube;
 	}
+	
 };
+
 
 export default Hex;
