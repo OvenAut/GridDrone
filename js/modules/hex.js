@@ -24,67 +24,32 @@ class Hex { constructor (size, scale, geometry, color , cell) {
 	
 	//this.cell = null;
 	
-
-
 	this.mat = new THREE.MeshLambertMaterial({
 		color: this.color,
-		//map: threeTexture,
-		//color:0xffffff,
-		//ambient: this.color,
-		//ambient: 0x000000,
-		//emissive: 0xffffff,
-		side: THREE.DoubleSide,
-		//envMap: cubeCamera.renderTarget,
-		//combine: THREE.MultiplyOperation 
+		side: THREE.FrontSide,
 	});
 	
 	this.mesh = new HexMesh(geometry, this.mat , color, cell);
-	//this.mesh.userData.defaultColor = new THREE.Color(color);
-	/*this.mesh = new THREE.Line(this.shape.createPointsGeometry(), new THREE.LineBasicMaterial({
-		color: this.color,
-		linewidth: 3 // this doesn't work on windows because ANGLE doesn't implement it (the WebGL driver)
-	}));*/
-
-	//this.mesh.userData.structure = this;
-	
-	// create references so we can control orientation through this (Hex), instead of drilling down
-	this.position = this.mesh.position;
-	this.rotation = this.mesh.rotation;
-	// rotate it to face up
-	//this.rotation.x = -90 * 0.0174532925;
-	this.rotation.x = 90 * (Math.PI/180);
-	
+	//this.position = this.mesh.position;
+	//this.rotation = this.mesh.rotation;
+	//console.log(this.mesh)
+	this.mesh.rotation.set(90 * (Math.PI/180),0,0); // = ;
 	this.mesh.scale.set(scale, scale, scale);
 	this.mesh.receiveShadow = true;
 }
-   // createVert(type, size, i) {
-   ///     var angle = ((2 * Math.PI) / 6) * i;
-   //     angle += type; // 0 if flat-topped, or 30deg if pointy
-   //     return new THREE.Vector3((size * Math.cos(angle)), (size * Math.sin(angle)), 0);
-  //  };
-
-    
-
-	placeAt(cube) {
-		// i found this algorithm through trial and error, please don't touch
-		//console.log(`cube.x = ${cube.x} ; cube.y = ${cube.y} ; cube.z = ${cube.z}`);
-		//console.log(this.width);
+   placeAt(cube) {
 		if (this.type === Hex.FLAT) {
-			this.position.x = cube.x * this.width * 0.75;
-			this.position.z = (cube.z - cube.y) * this.height * 0.5;
+			this.mesh.position.set(cube.x * this.width * 0.75,0,(cube.z - cube.y) * this.height * 0.5)
+			//this.mesh.position.x = cube.x * this.width * 0.75;
+			//this.mesh.position.z = (cube.z - cube.y) * this.height * 0.5;
 		}
 		else {
-			this.position.x = cube.x * this.width * 0.5;
-			this.position.z = (cube.z - cube.y) * this.height * 0.75;
+			this.mesh.position.set(cube.x * this.width * 0.5,0,(cube.z - cube.y) * this.height * 0.75)
+			//this.mesh.position.x = cube.x * this.width * 0.5;
+			//this.mesh.position.z = (cube.z - cube.y) * this.height * 0.75;
 		}
 		//this.cell = cube;
 	}
-
 };
-
-
-
-
-
 
 export default Hex;

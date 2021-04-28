@@ -13,37 +13,31 @@ var cellScale,cellSize = null;
 
 class HexGrid {
 	constructor(config) {
-		var x, y, z, c;
-		if (!config)
-			config = {};
-		// number of cells (in radius)
-		var size = config.size || 3;
-		cellSize = config.cellSize || 50;
-		cellScale = config.cellScale || 1;
+		
+		
 		//this.type = config.type || Hex.FLAT;
 		//this.rotationIncrement = Hex.POINTY;
 		// holds the grid position of each cell, to which our meshes are attached to in the Board entity
-		this.cells = [];
+		//this.cells = [];
 		// holds the mesh data that is displayed
 		//this.meshes = null;
 		// the grid holds its own Group to manipulate and make it easy to add/remove from the scene
 		this.group = new THREE.Group();
-		this.FLAT = 0;
-		this.POINTY = 30 * 0.0174532925;
+
 		//this.RayGroup = config.RayGroup || [];
 		//this.selectColor = config.selectColor;
 		// construct a hex-shaped grid
-		for (x = -size; x < size + 1; x++) {
-			for (y = -size; y < size + 1; y++) {
-				z = -x - y;
-				if (Math.abs(x) <= size && Math.abs(y) <= size && Math.abs(z) <= size) {
-					c = new THREE.Vector3(x, y, z);
+		//for (x = -size; x < size + 1; x++) {
+		//	for (y = -size; y < size + 1; y++) {
+		//		z = -x - y;
+		//		if (Math.abs(x) <= size && Math.abs(y) <= size && Math.abs(z) <= size) {
+		//			c = new THREE.Vector3(x, y, z);
 					//c.w = null; // for storing which hex is representing this cell
-					this.cells.push(c);
-				}
-			}
-		}
-		this.buildMesh(config.color);
+		//			this.cells.push(c);
+		//		}
+		//	}
+		//}
+		this.buildMesh(config);
 	}
 	createVert(type, size, i) {
         var angle = ((2 * Math.PI) / 6) * i;
@@ -51,12 +45,23 @@ class HexGrid {
         return new THREE.Vector3((size * Math.cos(angle)), (size * Math.sin(angle)), 0);
     };
 
-	buildMesh(color) {
-		var i, hex, cell;
+	buildMesh(config) {
+		if (!config)
+			config = {};
+		// number of cells (in radius)
+		var size = config.size || 3;
+		cellSize = config.cellSize || 50;
+		cellScale = config.cellScale || 1;
+
+		//var color = config.color
+		var i, hex;
+		var x, y, z, c;
 		var verts = [];
+		var FLAT = 0;
+		var POINTY = 30 * 0.0174532925;
 		// create the skeleton of the hex
 		for (i = 0; i < 6; i++) {
-			verts.push(this.createVert(this.FLAT, cellSize, i));
+			verts.push(this.createVert(FLAT, cellSize, i));
 		}
 		// copy the verts into a shape for the geometry to use
 		var hexShape = new THREE.Shape();
@@ -77,21 +82,36 @@ class HexGrid {
 		});
 		
 		// create Hex instances and place them on the grid, and add them to the group for easy management
-		for (i = 0; i < this.cells.length; i++) {
-			hex = new Hex(	cellSize,
-							cellScale,
-							hexGeo,
-							color || Tool.randomizeRGB('000, 100, 200', 200),
-							this.cells[i]);
-			//cell = this.cells[i];
-			//cell.w = hex;
-			//console.log(hex.mesh.uuid);
-			hex.placeAt(this.cells[i]);
-			
-			//this.meshes.push(hex);
-			//this.RayGroup.push(hex.mesh);
-			this.group.add(hex.mesh);
+
+		i = 0;
+		for (x = -size; x < size + 1; x++) {
+			for (y = -size; y < size + 1; y++) {
+				z = -x - y;
+				if (Math.abs(x) <= size && Math.abs(y) <= size && Math.abs(z) <= size) {
+					c = new THREE.Vector3(x, y, z);
+					//c.w = null; // for storing which hex is representing this cell
+					//this.cells.push(c);
+					hex = new Hex(	cellSize,
+						cellScale,
+						hexGeo,
+						Tool.randomizeRGB('000, 100, 200', 200),
+						c);
+		//cell = this.cells[i];
+		//cell.w = hex;
+		//console.log(hex.mesh.uuid);
+		hex.placeAt(c);
+		
+		//this.meshes.push(hex);
+		//this.RayGroup.push(hex.mesh);
+		this.group.add(hex.mesh);
+						i++;
+				}
+			}
 		}
+
+
+		//for (i = 0; i < this.cells.length; i++) {
+		//		}	
 		// rotate the group depending on the shape the grid is in
 		//this.group.rotation.y = this.type - (30 * 0.0174532925);
 		
