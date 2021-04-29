@@ -12,6 +12,7 @@ let INTERSECTED;
 const HOVERMOUSCOLOR = 0x0000aa ;
 const SELECTEDFIELDCOLOR = 0x00ff00 ;
 const HOVERSELECTEDMOUSCOLOR = 0xaa2222 ;
+let COLOR = 0x000000
 
 var helper = {
     speed: 0.01,
@@ -58,14 +59,9 @@ function setCube(position, color){
 
     const geometry = new THREE.ConeGeometry( 1.8, 1, 6 );
     const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color } ) );
-
- //   const cube2 = new MshStdBox(color);
- //   var OffsetPosition = new THREE.Vector3(0,2,0)
- //   OffsetPosition.add(position)
     object.position.copy(position).add(new THREE.Vector3(0,0.5,0));
     object.rotateY(10)
     scene.add( object );
-   // console.log( object)
     return object.uuid;
     
 }
@@ -77,9 +73,7 @@ var gridConfig = {
 };
 
 let grid = new HexGrid(gridConfig);
-//console.log(grid);
 scene.add(grid.group);
-//console.log(grid.group)
 
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.minDistance = 5;
@@ -93,6 +87,11 @@ controls.target.copy( grid.group.position );
 //	MIDDLE: THREE.MOUSE.DOLLY,
 //	RIGHT: THREE.MOUSE.ROTATE
 //}
+
+function SetInterselectedColor(color){
+    INTERSECTED.material.emissive.setHex( color );
+}
+
 
 var animate = function () {
     stats.begin();
@@ -112,27 +111,22 @@ var animate = function () {
             INTERSECTED = intersects[ 0 ].object;
             
             INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-            var color = INTERSECTED.getChildUuid() === null? HOVERMOUSCOLOR : HOVERSELECTEDMOUSCOLOR;
-
-
-            INTERSECTED.material.emissive.setHex( color );
+            
+            COLOR = INTERSECTED.getChildUuid() === null? HOVERMOUSCOLOR : HOVERSELECTEDMOUSCOLOR;
+            SetInterselectedColor(COLOR)
+            //INTERSECTED.material.emissive.setHex( color );
 
         }
     } else {
         if ( INTERSECTED)
-        INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
+        SetInterselectedColor( INTERSECTED.currentHex)
+        //INTERSECTED.material.emissive.setHex( INTERSECTED.currentHex );
         INTERSECTED = null;
     }
 
 
     renderer.render( scene, camera );
     controls.update();
-
-    // Show Placed in GUI
-    //helper.placed = placed.getCounter();    
-    //gui.controls.update
-    //console.log(helper.placed)
-    //guiPlaced.updateDisplay();
     stats.end();
     requestAnimationFrame( animate );
 };
