@@ -12,7 +12,7 @@ class Hex { constructor (size, scale, geometry, color , cell) {
     this.size = size;
     this.FLAT = 0;
     this.POINTY = 30 * 0.0174532925;
-	this.childUuid = null;
+	//this.childUuid = null;
 	
 	if (this.type === Hex.FLAT) {
 		this.width = this.size * 2;// * 0.95;
@@ -47,6 +47,7 @@ class Hex { constructor (size, scale, geometry, color , cell) {
 	this.mesh.getChildUuid = function(){
 		return this.childUuid
 	}
+	this.mesh.childUuid = null;
 
 
 	

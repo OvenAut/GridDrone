@@ -5,19 +5,27 @@ import * as dat from '../node_modules/three/examples/jsm/libs/dat.gui.module.js'
 import HexGrid from './modules/HexGrid.js';
 import SpotLight from './modules/SpotLight.js';
 import MshStdBox from './modules/mshStdBox.js';
-
+import Placed from './modules/Placed.js';
 
 const pointer = new THREE.Vector2();
 let INTERSECTED;
+const HOVERMOUSCOLOR = 0x0000aa ;
+const SELECTEDFIELDCOLOR = 0x00ff00 ;
+const HOVERSELECTEDMOUSCOLOR = 0xaa2222 ;
 
 var helper = {
-    speed: 0.01
+    speed: 0.01,
+    placed: 0
 };
 
 //console.log(helper)
 const gui = new dat.GUI();
 
+var placed = new Placed();
+
 gui.add(helper,'speed');
+var guiPlaced = gui.add(helper,'placed');
+
 //gui.add(helper,'rotation.x');
 
 const stats = new Stats();
@@ -47,13 +55,18 @@ scene.add( cube );
 
 
 function setCube(position, color){
-    const cube2 = new MshStdBox(color);
+
+    const geometry = new THREE.ConeGeometry( 1.8, 1, 6 );
+    const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color } ) );
+
+ //   const cube2 = new MshStdBox(color);
  //   var OffsetPosition = new THREE.Vector3(0,2,0)
  //   OffsetPosition.add(position)
-    cube2.position.copy(position).add(new THREE.Vector3(0,2,0));
-    scene.add( cube2 );
-    console.log( cube2)
-    return cube2.uuid;
+    object.position.copy(position).add(new THREE.Vector3(0,0.5,0));
+    object.rotateY(10)
+    scene.add( object );
+   // console.log( object)
+    return object.uuid;
     
 }
 
@@ -99,7 +112,10 @@ var animate = function () {
             INTERSECTED = intersects[ 0 ].object;
             
             INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
-            INTERSECTED.material.emissive.setHex( 0xff0000 );
+            var color = INTERSECTED.getChildUuid() === null? HOVERMOUSCOLOR : HOVERSELECTEDMOUSCOLOR;
+
+
+            INTERSECTED.material.emissive.setHex( color );
 
         }
     } else {
@@ -111,6 +127,12 @@ var animate = function () {
 
     renderer.render( scene, camera );
     controls.update();
+
+    // Show Placed in GUI
+    //helper.placed = placed.getCounter();    
+    //gui.controls.update
+    //console.log(helper.placed)
+    //guiPlaced.updateDisplay();
     stats.end();
     requestAnimationFrame( animate );
 };
@@ -118,7 +140,7 @@ var animate = function () {
 window.addEventListener( 'resize', onWindowResize, false );
 document.addEventListener( 'pointermove', onPointerMove );
 document.addEventListener('pointerdown',onMouseClick)
-
+document.addEventListener('dblclick',onMouseClick)
 
 function onWindowResize(){
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -134,16 +156,62 @@ function onPointerMove( event ) {
 }
 
 function onMouseClick(event){
-    //console.log(event)
-    if ( INTERSECTED.echo && event.button == 2) {
-        console.log(INTERSECTED.id)   
-        INTERSECTED.echo()
-        console.log(INTERSECTED.material.color)
-        if (INTERSECTED.getChildUuid() == null) {
-            INTERSECTED.setChildUuid(setCube(INTERSECTED.position,INTERSECTED.material.color))     
-        } 
-        
+    
+    if (!INTERSECTED) return
+    if ( INTERSECTED.hasOwnProperty('echo') && (event.button == 2 || event.type == "dblclick")) {
+        //console.log(INTERSECTED.id)   
+        //INTERSECTED.echo()
+        //console.log(INTERSECTED.material.color)
+        var color
+        const uuid =  INTERSECTED.getChildUuid();
+        if (uuid === null) {
+            INTERSECTED.setChildUuid(setCube(INTERSECTED.position,INTERSECTED.material.color))
+            INTERSECTED.currentHex = SELECTEDFIELDCOLOR  
+            color = HOVERSELECTEDMOUSCOLOR;
+            
+            //console.log(guiPlaced.getValue())
+            //guiPlaced.setValue()
+            //console.log(INTERSECTED.)
+            placed.addTile(INTERSECTED.uuid)
+            //placed.addCounter()
+            //placed.stack.push(INTERSECTED.getChildUuid())
+            //console.log(placed.stack.indexOf(uuid))
+            
+           // console.log(placed.stack)   
+        } else {
+            //console.log(placed.stack.indexOf(uuid))
+            
+            
+            DeleteObjectUUID(INTERSECTED.getChildUuid())
+            INTERSECTED.currentHex = 0x000000
+            //placed.decCounter()
+            color = HOVERMOUSCOLOR
+            //console.log(placed.stack.indexOf(INTERSECTED.getChildUuid()))
+
+            
+            //console.log(placed)
+        }
+        //ChangeTileColor(color)
+        INTERSECTED.material.emissive.setHex( color );
+        guiPlaced.setValue(placed.getCounter());
+    
+        placed.getTiles((stack)=>{
+            console.log(stack) 
+        })
     }
+}
+
+
+function DeleteObjectUUID (uuid){
+    const object = scene.getObjectByProperty('uuid', uuid)
+    scene.remove( object );
+    INTERSECTED.setChildUuid(null)
+    placed.clearTile(uuid)
+    
+}
+
+function ChangeTileColor(color){
+    INTERSECTED.material.emissive.setHex( color );
 }
 
 animate();
