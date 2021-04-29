@@ -18,7 +18,7 @@ var helper = {
     speed: 0.01,
     placed: 0
 };
-
+//New comment
 //console.log(helper)
 const gui = new dat.GUI();
 
