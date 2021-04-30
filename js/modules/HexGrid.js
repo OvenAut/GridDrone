@@ -23,6 +23,7 @@ class HexGrid {
 		//this.meshes = null;
 		// the grid holds its own Group to manipulate and make it easy to add/remove from the scene
 		this.group = new THREE.Group();
+		this.group.name = "GridObject"
 
 		//this.RayGroup = config.RayGroup || [];
 		//this.selectColor = config.selectColor;

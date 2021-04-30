@@ -12,7 +12,12 @@ let INTERSECTED;
 const HOVERMOUSCOLOR = 0x0000aa ;
 const SELECTEDFIELDCOLOR = 0x00ff00 ;
 const HOVERSELECTEDMOUSCOLOR = 0xaa2222 ;
+const COUPLECOLOR = 0xFF2222 ;
+
 let COLOR = 0x000000
+const CELLNAME_SINGEL = 'singel';
+const CELLNAME_COUPLE = 'couple';
+var OldFields=[]
 
 var helper = {
     speed: 0.01,
@@ -60,6 +65,7 @@ function setCube(position, color){
     const geometry = new THREE.ConeGeometry( 1.8, 1, 6 );
     const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color } ) );
     object.position.copy(position).add(new THREE.Vector3(0,0.5,0));
+    //console.log(object.position)
     object.rotateY(10)
     scene.add( object );
     return object.uuid;
@@ -186,26 +192,99 @@ function onMouseClick(event){
             //console.log(placed)
         }
         //ChangeTileColor(color)
+        updateNeighbors()
         INTERSECTED.material.emissive.setHex( color );
         guiPlaced.setValue(placed.getCounter());
     
-        placed.getTiles((stack)=>{
-            console.log(stack) 
-        })
+      //  placed.getTiles((stack)=>{
+      //      console.log(stack) 
+      //  })
     }
 }
 
 
 function DeleteObjectUUID (uuid){
-    const object = scene.getObjectByProperty('uuid', uuid)
+    const object = GetUuIDObject(uuid)
     scene.remove( object );
     INTERSECTED.setChildUuid(null)
     placed.clearTile(uuid)
     
 }
 
-function ChangeTileColor(color){
-    INTERSECTED.material.emissive.setHex( color );
+function updateNeighbors(){
+    //const object = GetUuIDObject(uuid)
+    var GridChildrens = scene.getObjectByProperty('name','GridObject')
+
+    var PlacedCell = GridChildrens.children.filter(cell => cell.getChildUuid())
+    //console.log(PlacedCell)
+    var fields = [];
+    PlacedCell.forEach(element => {
+        
+        
+        
+        fields = fields.concat(placed.MapVec(element.cell)) 
+        
+    });
+    // compare old and new fields
+
+   
+    var MapUUI = []
+    PlacedCell.forEach(element => {
+        
+        fields.forEach(vm => {
+            //console.log(element.cell)
+            //console.log(vm)
+            var cell = element.matchCellVec(vm)
+            if (cell) {
+            if(!MapUUI.includes(cell))
+                MapUUI.push(cell)
+            
+            }
+        })
+            //console.log(element.length)
+        
+    });
+
+    OldFields.forEach(element =>{
+        if (MapUUI.includes(element))
+            OldFields.splice(OldFields.indexOf(element),1)
+    })
+    console.log(OldFields)
+
+    console.log(MapUUI)
+
+
+
+    MapUUI.forEach(element =>{
+        var cellCopple = scene.getObjectByProperty('uuid',element)
+        //console.log(cellCopple)
+            cellCopple.material.emissive.setHex( COUPLECOLOR );
+    })
+    //console.log(MapUUI)
+
+
+    //  .material.emissive.setHex( color );
+
+
+   // placed.getTiles((stack)=>{
+   //     console.log(stack) 
+   // })
+    //GridChildrens.children.forEach(gridObject => {
+//    var temp = gridObject.getIdFromVec()
+//    console.log(temp)
+//});
+OldFields = MapUUI;
 }
 
+function GetUuIDObject(uuid){
+    return  scene.getObjectByProperty('uuid', uuid)
+}
+//var GridChildrens = scene.getObjectByProperty('name','GridObject')
+//console.log(scene)
+//console.log(GridChildrens.children)
+
+//GridChildrens.children.forEach(gridObject => {
+//    var temp = gridObject.getIdFromVec()
+//    console.log(temp)
+//});
 animate();

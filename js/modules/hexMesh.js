@@ -6,25 +6,25 @@ class HexMesh extends THREE.Mesh {
 
 	//this.startup();
 
-	this.rayHit = false;
+	//this.rayHit = false;
 	
-	this.touchOnec = false;
-	this.hexBlocked = false;
-	this.hexAnimation = false;
+	//this.touchOnec = false;
+	//this.hexBlocked = false;
+	//this.hexAnimation = false;
 
-	this.rightSelectShot = false;
-	this.leftSelectShot = false;
+	//this.rightSelectShot = false;
+	//this.leftSelectShot = false;
 
-	this.inTransition = false;
+	//this.inTransition = false;
 
-	this.timeOut = undefined;
+	//this.timeOut = undefined;
 
 	this.cell = cell;
 	//this.timer2 = undefined;
 	
-	this.defaultColor = new THREE.Color(color);
-	this.selectColor = new THREE.Color(0xFF0000);
-	this.touchColor = new THREE.Color(0xDD00FF);
+	//this.defaultColor = new THREE.Color(color);
+	//this.selectColor = new THREE.Color(0xFF0000);
+	//this.touchColor = new THREE.Color(0xDD00FF);
 	
 	}
 
@@ -32,9 +32,9 @@ class HexMesh extends THREE.Mesh {
 
 
 
-	setDefaultColor() {	
-		this.material.color.set(this.defaultColor);
-	}
+	//setDefaultColor() {	
+	//	this.material.color.set(this.defaultColor);
+	//}
 
 	update(){
 		return;

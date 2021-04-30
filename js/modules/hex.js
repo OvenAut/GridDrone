@@ -34,24 +34,43 @@ class Hex { constructor (size, scale, geometry, color , cell) {
 	//this.position = this.mesh.position;
 	//this.rotation = this.mesh.rotation;
 	//console.log(this.mesh)
+	this.mesh.name = 'singel'
 	this.mesh.rotation.set(90 * (Math.PI/180),0,0); // = ;
 	this.mesh.scale.set(scale, scale, scale);
 	this.mesh.receiveShadow = true;
 	this.mesh.echo = function(){
 		
-		console.log(this.childUuid);
+		console.log(this.cell);
 	}
 	this.mesh.setChildUuid = function(uuid){
 		this.childUuid = uuid
+		
 	}
 	this.mesh.getChildUuid = function(){
 		return this.childUuid
 	}
 	this.mesh.childUuid = null;
+	//console.log(this.mesh)
+	this.mesh.setName = function(name) {
+		var _name = name === null ? '' : name
+		
+		this.mesh.name = _name
+	}
+	this.mesh.getCellVector = function() {
+		return this.cell
+	}
+	this.mesh.matchCellVec= function(Vec2){
+		//console.log(this.cell)
+		//console.log(Vec2)
+		//console.log(this.uuid)
+		return this.cell.equals(Vec2)  ? this.uuid: null
+	}
+	//updateNeighbors = function() {
+	//	coneole.log(this.mesh.cell)
+	//}
 
-
-	
 }
+
 
    placeAt(cube) {
 		if (this.type === Hex.FLAT) {
