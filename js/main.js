@@ -12,7 +12,7 @@ let INTERSECTED;
 const HOVERMOUSCOLOR = 0x0000aa ;
 const SELECTEDFIELDCOLOR = 0x00ff00 ;
 const HOVERSELECTEDMOUSCOLOR = 0xaa2222 ;
-const COUPLECOLOR = 0xFF2222 ;
+const COUPLECOLOR = 0xFFAA22 ;
 
 let COLOR = 0x000000
 const CELLNAME_SINGEL = 'singel';
@@ -21,7 +21,8 @@ var OldFields=[]
 
 var helper = {
     speed: 0.01,
-    placed: 0
+    placed: 0,
+    couple: 0
 };
 //New comment
 //console.log(helper)
@@ -31,6 +32,8 @@ var placed = new Placed();
 
 gui.add(helper,'speed');
 var guiPlaced = gui.add(helper,'placed');
+var guiCouple = gui.add(helper,'couple');
+
 
 //gui.add(helper,'rotation.x');
 
@@ -166,9 +169,10 @@ function onMouseClick(event){
         const uuid =  INTERSECTED.getChildUuid();
         if (uuid === null) {
             INTERSECTED.setChildUuid(setCube(INTERSECTED.position,INTERSECTED.material.color))
-            INTERSECTED.currentHex = SELECTEDFIELDCOLOR  
+            //INTERSECTED.currentHex = SELECTEDFIELDCOLOR  
             color = HOVERSELECTEDMOUSCOLOR;
-            
+            console.log(hasNeighbors(INTERSECTED.cell))
+            INTERSECTED.currentHex = hasNeighbors(INTERSECTED.cell) ? COUPLECOLOR:SELECTEDFIELDCOLOR
             //console.log(guiPlaced.getValue())
             //guiPlaced.setValue()
             //console.log(INTERSECTED.)
@@ -195,6 +199,8 @@ function onMouseClick(event){
         updateNeighbors()
         INTERSECTED.material.emissive.setHex( color );
         guiPlaced.setValue(placed.getCounter());
+
+
     
       //  placed.getTiles((stack)=>{
       //      console.log(stack) 
@@ -211,6 +217,28 @@ function DeleteObjectUUID (uuid){
     
 }
 
+
+function hasNeighbors(cell){
+    var fields = [];
+    var _hasNeigbo = false
+    var cellobjects
+    fields = placed.MapVec(cell)
+    //console.log(fields)
+
+
+    fields.forEach(vm =>{
+     //   console.log(vm)
+        cellobjects = GetObjectByCell(vm)
+        console.log(cellobjects.length)
+        if (!cellobjects.length == 0)
+        _hasNeigbo = true
+        
+    })
+    //console.log(cellobjects)
+    //OldFields.map(element => )
+    return _hasNeigbo
+}
+
 function updateNeighbors(){
     //const object = GetUuIDObject(uuid)
     var GridChildrens = scene.getObjectByProperty('name','GridObject')
@@ -218,6 +246,8 @@ function updateNeighbors(){
     var PlacedCell = GridChildrens.children.filter(cell => cell.getChildUuid())
     //console.log(PlacedCell)
     var fields = [];
+
+    //Plazierte Felder Speichern
     PlacedCell.forEach(element => {
         
         
@@ -225,8 +255,8 @@ function updateNeighbors(){
         fields = fields.concat(placed.MapVec(element.cell)) 
         
     });
-    // compare old and new fields
 
+    //console.log(PlacedCell)
    
     var MapUUI = []
     PlacedCell.forEach(element => {
@@ -244,23 +274,45 @@ function updateNeighbors(){
             //console.log(element.length)
         
     });
+    
+    guiCouple.setValue(MapUUI.length);
 
-    OldFields.forEach(element =>{
-        if (MapUUI.includes(element))
-            OldFields.splice(OldFields.indexOf(element),1)
+    // SUCHEN Nach alten Feldern
+    //console.log(OldFields)
+    //console.log(MapUUI)
+
+    let difference = OldFields.filter(x => !MapUUI.includes(x));
+    //console.log(difference)
+    difference.forEach(element=>{
+        changeHexColor(element,SELECTEDFIELDCOLOR)
     })
-    console.log(OldFields)
+    
+    
+    //OldFields.forEach(element =>{
+    //    console.log(element)
+        
 
-    console.log(MapUUI)
+    //    if (MapUUI.includes(element)){
+    //        console.log(OldFields.indexOf(element))
+    //        OldFields.splice(OldFields.indexOf(element),1)
+    //    }
+            
+    //})
+    //console.log(OldFields.length + ' Len')
 
+ //   console.log(MapUUI)
+    
 
 
     MapUUI.forEach(element =>{
-        var cellCopple = scene.getObjectByProperty('uuid',element)
+       // var cellCopple = scene.getObjectByProperty('uuid',element)
         //console.log(cellCopple)
-            cellCopple.material.emissive.setHex( COUPLECOLOR );
+       //     cellCopple.material.emissive.setHex( COUPLECOLOR );
+            changeHexColor(element,COUPLECOLOR)
     })
     //console.log(MapUUI)
+
+
 
 
     //  .material.emissive.setHex( color );
@@ -276,8 +328,45 @@ function updateNeighbors(){
 OldFields = MapUUI;
 }
 
+
+function changeHexColor(uuid,color){
+    var cellCopple = scene.getObjectByProperty('uuid',uuid)
+    //console.log(cellCopple)
+        cellCopple.material.emissive.setHex( color );
+
+}
+
 function GetUuIDObject(uuid){
     return  scene.getObjectByProperty('uuid', uuid)
+}
+
+function GetObjectByCell(cell){
+    var fieldList = []
+    //console.log(OldFields.length)
+    placed.getTiles(elements =>{
+        if (!elements.length == 0) {
+            //console.log(elements)
+            elements.forEach(element => {
+        
+            let  fieldObject = scene.getObjectByProperty('uuid', element)
+
+                if (fieldObject.cell.equals(cell))
+                fieldList = fieldList.concat(fieldObject)
+            });
+        
+            //console.log(fieldList)
+        }
+       
+    } )
+
+   // OldFields.forEach(element=>{
+   //     console.log(element)
+   //console.log(fieldList)
+   // })
+   if (fieldList.length == 0)
+   return false
+   else
+   return fieldList
 }
 //var GridChildrens = scene.getObjectByProperty('name','GridObject')
 //console.log(scene)
