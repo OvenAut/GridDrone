@@ -18,6 +18,8 @@ let COLOR = 0x000000
 const CELLNAME_SINGEL = 'singel';
 const CELLNAME_COUPLE = 'couple';
 var OldFields=[]
+var mylatesttap;
+var doubleTaped;
 
 var helper = {
     speed: 0.001,
@@ -31,10 +33,12 @@ const gui = new dat.GUI();
 
 var placed = new Placed();
 
-var guiSpeed = gui.add(helper,'speed');
-var guiPlaced = gui.add(helper,'placed');
-var guiCouple = gui.add(helper,'couple');
-var guiNeighbours = gui.add(helper,'energie')
+const guiEnergie = gui.add(helper,'energie')
+const debugFolder = gui.addFolder("Debug")
+const guiSpeed = debugFolder.add(helper,'speed');
+const guiPlaced = debugFolder.add(helper,'placed');
+const guiCouple = debugFolder.add(helper,'couple');
+debugFolder.close()
 
 
 
@@ -175,9 +179,9 @@ function onPointerMove( event ) {
 }
 
 function onMouseClick(event){
-    
+   // console.log(event)
     if (!INTERSECTED) return
-    if ( INTERSECTED.hasOwnProperty('echo') && (event.button == 2 || event.type == "dblclick")) {
+    if ( INTERSECTED.hasOwnProperty('echo') && (event.button == 2 || event.type == "dblclick" || doupletap(event.pointerType)) ) {
         //console.log(INTERSECTED.id)   
         //INTERSECTED.echo()
         //console.log(INTERSECTED.material.color)
@@ -199,8 +203,9 @@ function onMouseClick(event){
 
             //console.log(guiPlaced.getValue())
             //guiPlaced.setValue()
-            //console.log(INTERSECTED.uuid)
-            placed.addTile(INTERSECTED.uuid,INTERSECTED.cell)
+           // console.log(INTERSECTED)
+
+            placed.addTile(INTERSECTED.uuid,INTERSECTED.cell,INTERSECTED.energie)
             //placed.addCounter()
             //placed.stack.push(INTERSECTED.getChildUuid())
             //console.log(placed.stack.indexOf(uuid))
@@ -232,6 +237,29 @@ function onMouseClick(event){
     }
 }
 
+function doupletap(eventType){
+    var doubleTap = false 
+    //console.log(eventType)
+    if(eventType =='touch') {
+   
+      var now = new Date().getTime();
+      var timesince = now - mylatesttap;
+     // console.log(timesince)
+       if((timesince < 600) && (timesince > 0) && !doubleTaped){
+
+    // double tap   
+       doubleTap = true
+       doubleTaped = true
+       }
+
+       if(timesince > 600)
+       doubleTaped = false
+
+
+       mylatesttap = new Date().getTime();  
+    }
+   return doubleTap
+}
 
 function DeleteObjectUUID (uuid){
 
@@ -265,7 +293,7 @@ function hasNeighbors(cell){
      
         cellobjects = placed.getUuid(vm)
         //console.log(cellobjects)
-        if (!cellobjects.length == 0){
+        if (cellobjects){
             countNeighbors++
             _hasNeigbo = countNeighbors
             //console.log("found")
@@ -292,13 +320,18 @@ function updateNeighbors(){
     var PlacedCell = placed.getStack();
     //console.log(PlacedCell)
     var totalNeigborns = 0
+    var totalEnegie = 0
     PlacedCell.forEach(element => {
         var nrNeighbors = hasNeighbors(element.cell)
-        totalNeigborns = totalNeigborns + nrNeighbors
         if(nrNeighbors){
-//            console.log(callCOUPLECOLOR(nrNeighbors))
+            totalNeigborns = totalNeigborns + nrNeighbors
+            totalEnegie = totalEnegie + element.energie
+    
+            //            console.log(callCOUPLECOLOR(nrNeighbors))
             color = callCOUPLECOLOR(nrNeighbors)
         couple++
+        
+        
         //console.log(couple)
             
         } else {
@@ -307,11 +340,12 @@ function updateNeighbors(){
         changeHexColor(element.uuid,color)
 
     })
-    guiNeighbours.setValue(totalNeigborns);
+   // console.log(totalEnegie*totalNeigborns)
+    guiEnergie.setValue(totalEnegie*totalNeigborns);
 
     guiCouple.setValue(couple);
     
-    var newSpeed = 0.001 + ( 0.001 *(totalNeigborns * 0.2)) 
+    var newSpeed = 0.001 + ( 0.001 *(totalEnegie*totalNeigborns * 0.0002)) 
     
     guiSpeed.setValue(newSpeed)
 

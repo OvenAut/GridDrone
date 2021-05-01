@@ -92,11 +92,13 @@ class HexGrid {
 					c = new THREE.Vector3(x, y, z);
 					//c.w = null; // for storing which hex is representing this cell
 					//this.cells.push(c);
+					var colorObject = Tool.randomizeRGB('000, 100, 200', 200)
 					hex = new Hex(	cellSize,
 						cellScale,
 						hexGeo,
-						Tool.randomizeRGB('000, 100, 200', 200),
-						c);
+						colorObject.color,
+						c,
+						colorObject.energie);
 		//cell = this.cells[i];
 		//cell.w = hex;
 		//console.log(hex.mesh.uuid);

@@ -41,15 +41,16 @@ Placed.prototype.getCounter = function(){
     
     return stack.length
 }
-Placed.prototype.addTile = function (uuid,cell) {
+Placed.prototype.addTile = function (uuid,cell,energie) {
     stckObject = {
         uuid:uuid,
-        cell:cell}
+        cell:cell,
+        energie:energie,    
+    }
     
     stack.push(stckObject)
 
-    //counter = stack.length
-    //updateTile()
+    //counter = stack    //updateTile()
 }
 Placed.prototype.clearTile = function (uuid) {
     
@@ -80,8 +81,18 @@ Placed.prototype.getTiles = function (callback) {
 
 Placed.prototype.getUuid = function(cell){
    // console.log(GetUuidFromCell(cell))
-   return  GetUuidFromCell(cell)
+   const stack = GetStackFromCell(cell)
+//   console.log(stack) 
+   return  stack.uuid
 }
+
+Placed.prototype.getEnergie = function(cell){
+    // console.log(GetUuidFromCell(cell))
+    const stack = GetStackFromCell(cell) 
+    return  stack.energie
+ }
+
+
 Placed.prototype.getCell = function(uuid){
     return  GetCellFromUuid(uuid)
  }
@@ -89,7 +100,24 @@ Placed.prototype.getCell = function(uuid){
 
 export default Placed;
 
-function GetUuidFromCell(cell){
+function GetStackFromCell(cell){
+
+    var _uuid = []
+    for (var i=0; i < stack.length; i++){
+      // console.log(stack[i])
+       // console.log(cell)
+        if (stack[i].cell.equals(cell)) {
+        //    console.log(stack[i])
+            _uuid = stack[i]
+            break
+        }
+        
+
+    }
+    return _uuid
+}
+
+function GetEnergieFromCell(cell){
 
     var _uuid = []
     for (var i=0; i < stack.length; i++){
@@ -97,7 +125,7 @@ function GetUuidFromCell(cell){
        // console.log(cell)
         if (stack[i].cell.equals(cell)) {
         //    console.log(stack[i].uuid)
-            _uuid = stack[i].uuid
+            _uuid = stack[i].energie
             break
         }
         

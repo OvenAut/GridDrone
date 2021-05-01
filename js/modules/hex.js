@@ -5,11 +5,12 @@ import HexMesh from  './hexMesh.js';
 	Grid cell that constructs its geometry for rendering and holds gameplay properties.
  */
 
-class Hex { constructor (size, scale, geometry, color , cell) {
+class Hex { constructor (size, scale, geometry, color , cell, energie) {
 	this.type = Hex.FLAT;
-	this.color = color || 0xFF0000;
+	//this.color = color || 0xFF0000;
 	this.defaultColor = color;
     this.size = size;
+	//this.energie = energie
     this.FLAT = 0;
     this.POINTY = 30 * 0.0174532925;
 	//this.childUuid = null;
@@ -26,7 +27,7 @@ class Hex { constructor (size, scale, geometry, color , cell) {
 	//this.cell = null;
 	
 	this.mat = new THREE.MeshLambertMaterial({
-		color: this.color,
+		color: color,
 		side: THREE.FrontSide,
 	});
 	
@@ -34,6 +35,7 @@ class Hex { constructor (size, scale, geometry, color , cell) {
 	//this.position = this.mesh.position;
 	//this.rotation = this.mesh.rotation;
 	//console.log(this.mesh)
+	this.mesh.energie = energie
 	this.mesh.name = 'singel'
 	this.mesh.rotation.set(90 * (Math.PI/180),0,0); // = ;
 	this.mesh.scale.set(scale, scale, scale);

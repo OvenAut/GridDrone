@@ -12,18 +12,21 @@ class Tool {
 	}
 	randomizeRGB(base, range) {
 		var rgb = base.split(',');
-		var color = 'rgb(';
+		let color = 'rgb(';
 		var i, c;
-		range = this.randomInt(range);
+		var _range = this.randomInt(range);
 		for (i = 0; i < 3; i++ ) {
-			c = parseInt(rgb[i]) + range;
+			c = parseInt(rgb[i]) + _range;
 			if (c < 0) c = 0;
 			else if (c > 255) c = 255;
 			color += c + ',';
 		};
 		color = color.substring(0, color.length-1);
 		color += ')';
-		return color;
+		//console.log()
+		const energie = Math.floor((((range*0.5)-_range)/range)*100)
+		//console.log(energie) 
+		return {color:color,energie:energie}
 	}
 	
 	randomInt(min, max) {
