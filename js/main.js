@@ -22,7 +22,8 @@ var OldFields=[]
 var helper = {
     speed: 0.01,
     placed: 0,
-    couple: 0
+    couple: 0,
+    neighbours:0,
 };
 //New comment
 //console.log(helper)
@@ -33,6 +34,9 @@ var placed = new Placed();
 gui.add(helper,'speed');
 var guiPlaced = gui.add(helper,'placed');
 var guiCouple = gui.add(helper,'couple');
+var guiNeighbours = gui.add(helper,'neighbours')
+
+
 
 
 //gui.add(helper,'rotation.x');
@@ -170,13 +174,14 @@ function onMouseClick(event){
         if (uuid === null) {
             INTERSECTED.setChildUuid(setCube(INTERSECTED.position,INTERSECTED.material.color))
             //INTERSECTED.currentHex = SELECTEDFIELDCOLOR  
+            //uuid = INTERSECTED.getChildUuid()
             color = HOVERSELECTEDMOUSCOLOR;
-            console.log(hasNeighbors(INTERSECTED.cell))
+            //console.log(hasNeighbors(INTERSECTED.cell))
             INTERSECTED.currentHex = hasNeighbors(INTERSECTED.cell) ? COUPLECOLOR:SELECTEDFIELDCOLOR
             //console.log(guiPlaced.getValue())
             //guiPlaced.setValue()
-            //console.log(INTERSECTED.)
-            placed.addTile(INTERSECTED.uuid)
+            //console.log(INTERSECTED.uuid)
+            placed.addTile(INTERSECTED.uuid,INTERSECTED.cell)
             //placed.addCounter()
             //placed.stack.push(INTERSECTED.getChildUuid())
             //console.log(placed.stack.indexOf(uuid))
@@ -186,7 +191,7 @@ function onMouseClick(event){
             //console.log(placed.stack.indexOf(uuid))
             
             
-            DeleteObjectUUID(INTERSECTED.getChildUuid())
+            DeleteObjectUUID(INTERSECTED.uuid)
             INTERSECTED.currentHex = 0x000000
             //placed.decCounter()
             color = HOVERMOUSCOLOR
@@ -210,10 +215,19 @@ function onMouseClick(event){
 
 
 function DeleteObjectUUID (uuid){
+
+    //console.log(scene)
+
     const object = GetUuIDObject(uuid)
-    scene.remove( object );
+    //console.log(object)
+    //console.log(object.getChildUuid())
+    const objectMesh = GetUuIDObject(object.getChildUuid())
+    scene.remove( objectMesh );
     INTERSECTED.setChildUuid(null)
     placed.clearTile(uuid)
+//    placed.getTiles(elements=>{
+//        console.log(elements)
+//    })
     
 }
 
@@ -222,110 +236,58 @@ function hasNeighbors(cell){
     var fields = [];
     var _hasNeigbo = false
     var cellobjects
+    var countNeighbors = 0
     fields = placed.MapVec(cell)
     //console.log(fields)
 
 
     fields.forEach(vm =>{
      //   console.log(vm)
-        cellobjects = GetObjectByCell(vm)
-        console.log(cellobjects.length)
-        if (!cellobjects.length == 0)
-        _hasNeigbo = true
+     
+        cellobjects = placed.getUuid(vm)
+        //console.log(cellobjects)
+        if (!cellobjects.length == 0){
+            countNeighbors++
+            _hasNeigbo = true
+        }
+        
         
     })
+    guiNeighbours.setValue(countNeighbors);
+    
     //console.log(cellobjects)
     //OldFields.map(element => )
     return _hasNeigbo
 }
 
 function updateNeighbors(){
+    var color 
+    var couple = 0
     //const object = GetUuIDObject(uuid)
-    var GridChildrens = scene.getObjectByProperty('name','GridObject')
+    //var GridChildrens = scene.getObjectByProperty('name','GridObject')
 
-    var PlacedCell = GridChildrens.children.filter(cell => cell.getChildUuid())
+    //var PlacedCell = GridChildrens.children.filter(cell => cell.getChildUuid())
+
+    var PlacedCell = placed.getStack();
     //console.log(PlacedCell)
-    var fields = [];
 
-    //Plazierte Felder Speichern
     PlacedCell.forEach(element => {
-        
-        
-        
-        fields = fields.concat(placed.MapVec(element.cell)) 
-        
-    });
+        if(hasNeighbors(element.cell)){
+            color = COUPLECOLOR
+        couple++
 
-    //console.log(PlacedCell)
-   
-    var MapUUI = []
-    PlacedCell.forEach(element => {
-        
-        fields.forEach(vm => {
-            //console.log(element.cell)
-            //console.log(vm)
-            var cell = element.matchCellVec(vm)
-            if (cell) {
-            if(!MapUUI.includes(cell))
-                MapUUI.push(cell)
             
-            }
-        })
-            //console.log(element.length)
-        
-    });
-    
-    guiCouple.setValue(MapUUI.length);
+        } else {
+            color = SELECTEDFIELDCOLOR
+        }
+        changeHexColor(element.uuid,color)
 
-    // SUCHEN Nach alten Feldern
-    //console.log(OldFields)
-    //console.log(MapUUI)
-
-    let difference = OldFields.filter(x => !MapUUI.includes(x));
-    //console.log(difference)
-    difference.forEach(element=>{
-        changeHexColor(element,SELECTEDFIELDCOLOR)
     })
-    
-    
-    //OldFields.forEach(element =>{
-    //    console.log(element)
-        
 
-    //    if (MapUUI.includes(element)){
-    //        console.log(OldFields.indexOf(element))
-    //        OldFields.splice(OldFields.indexOf(element),1)
-    //    }
-            
-    //})
-    //console.log(OldFields.length + ' Len')
+    guiCouple.setValue(couple);
 
- //   console.log(MapUUI)
-    
+    return
 
-
-    MapUUI.forEach(element =>{
-       // var cellCopple = scene.getObjectByProperty('uuid',element)
-        //console.log(cellCopple)
-       //     cellCopple.material.emissive.setHex( COUPLECOLOR );
-            changeHexColor(element,COUPLECOLOR)
-    })
-    //console.log(MapUUI)
-
-
-
-
-    //  .material.emissive.setHex( color );
-
-
-   // placed.getTiles((stack)=>{
-   //     console.log(stack) 
-   // })
-    //GridChildrens.children.forEach(gridObject => {
-//    var temp = gridObject.getIdFromVec()
-//    console.log(temp)
-//});
-OldFields = MapUUI;
 }
 
 
@@ -344,11 +306,12 @@ function GetObjectByCell(cell){
     var fieldList = []
     //console.log(OldFields.length)
     placed.getTiles(elements =>{
+        //console.log(elements)
         if (!elements.length == 0) {
             //console.log(elements)
             elements.forEach(element => {
         
-            let  fieldObject = scene.getObjectByProperty('uuid', element)
+            let  fieldObject = scene.getObjectByProperty('uuid', element.uuid)
 
                 if (fieldObject.cell.equals(cell))
                 fieldList = fieldList.concat(fieldObject)

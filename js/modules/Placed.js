@@ -4,6 +4,10 @@
 import * as THREE from '/node_modules/three/build/three.module.js';
 
 let stack = []
+let stckObject = {
+    uuid:"",
+    cell: new THREE.Vector3()
+}
 let Cube = new THREE.Vector3()
 
 const cube_directions = [
@@ -37,24 +41,84 @@ Placed.prototype.getCounter = function(){
     
     return stack.length
 }
-Placed.prototype.addTile = function (uuid) {
+Placed.prototype.addTile = function (uuid,cell) {
+    stckObject = {
+        uuid:uuid,
+        cell:cell}
     
-    stack.push(uuid)
+    stack.push(stckObject)
 
     //counter = stack.length
     //updateTile()
 }
 Placed.prototype.clearTile = function (uuid) {
     
-    stack.splice( stack.indexOf(uuid),1)
+    for (var i=0; i < stack.length; i++){
+        //console.log(stack[i])
+        //console.log(uuid)
+        if (stack[i].uuid == uuid) {
+            //console.log(stack[i])
+            stack.splice(i,1)
+            break
+        }
+
+    }
+
+    //stack.splice( stack.indexOf(uuid),1)
     //counter = stack.length
     //updateTile()
 }
+Placed.prototype.getStack = function () {
+    
+    return  stack
+}
+
 Placed.prototype.getTiles = function (callback) {
     
     return  callback(stack)
 }
 
+Placed.prototype.getUuid = function(cell){
+   // console.log(GetUuidFromCell(cell))
+   return  GetUuidFromCell(cell)
+}
+Placed.prototype.getCell = function(uuid){
+    return  GetCellFromUuid(uuid)
+ }
+
 
 export default Placed;
 
+function GetUuidFromCell(cell){
+
+    var _uuid = []
+    for (var i=0; i < stack.length; i++){
+       // console.log(stack[i].cell)
+       // console.log(cell)
+        if (stack[i].cell.equals(cell)) {
+        //    console.log(stack[i].uuid)
+            _uuid = stack[i].uuid
+            break
+        }
+        
+
+    }
+    return _uuid
+}
+
+function GetCellFromUuid(uuid){
+    var _cell 
+    for (var i=0; i < stack.length; i++){
+        //console.log(stack[i])
+        //console.log(uuid)
+        if (stack[i].uuid == uuid) {
+            //console.log(stack[i])
+            _uuid = stack[i].cell
+            break
+        }
+    
+
+
+    }
+    return _cell
+}
