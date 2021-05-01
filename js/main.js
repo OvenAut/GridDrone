@@ -10,7 +10,7 @@ import Placed from './modules/Placed.js';
 const pointer = new THREE.Vector2();
 let INTERSECTED;
 const HOVERMOUSCOLOR = 0x0000aa ;
-const SELECTEDFIELDCOLOR = 0x00ff00 ;
+const SELECTEDFIELDCOLOR = 0x005555 ;
 const HOVERSELECTEDMOUSCOLOR = 0xaa2222 ;
 const COUPLECOLOR = 0xFFAA22 ;
 
@@ -20,10 +20,10 @@ const CELLNAME_COUPLE = 'couple';
 var OldFields=[]
 
 var helper = {
-    speed: 0.01,
+    speed: 0.001,
     placed: 0,
     couple: 0,
-    neighbours:0,
+    energie:0,
 };
 //New comment
 //console.log(helper)
@@ -31,10 +31,10 @@ const gui = new dat.GUI();
 
 var placed = new Placed();
 
-gui.add(helper,'speed');
+var guiSpeed = gui.add(helper,'speed');
 var guiPlaced = gui.add(helper,'placed');
 var guiCouple = gui.add(helper,'couple');
-var guiNeighbours = gui.add(helper,'neighbours')
+var guiNeighbours = gui.add(helper,'energie')
 
 
 
@@ -60,11 +60,23 @@ scene.add( new SpotLight(0xddffdd, 0.6, 100) );
 
 
 var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+var material = new THREE.MeshBasicMaterial( { 
+    color: 0x009900,
+    polygonOffset: true,
+    polygonOffsetFactor: 1, // positive value pushes polygon further away
+    polygonOffsetUnits: 1
+} );
 var cube = new THREE.Mesh( geometry, material );
+
 cube.castShadow = true;
 cube.position.set(0,5,0);
 scene.add( cube );
+
+// wireframe
+var geo = new THREE.EdgesGeometry( cube.geometry ); // or WireframeGeometry
+var mat = new THREE.LineBasicMaterial( { color: 0xffffff } );
+var wireframe = new THREE.LineSegments( geo, mat );
+cube.add( wireframe );
 
 
 function setCube(position, color){
@@ -177,7 +189,14 @@ function onMouseClick(event){
             //uuid = INTERSECTED.getChildUuid()
             color = HOVERSELECTEDMOUSCOLOR;
             //console.log(hasNeighbors(INTERSECTED.cell))
-            INTERSECTED.currentHex = hasNeighbors(INTERSECTED.cell) ? COUPLECOLOR:SELECTEDFIELDCOLOR
+
+            //INTERSECTED.currentHex = hasNeighbors(INTERSECTED.cell,true) ? COUPLECOLOR:SELECTEDFIELDCOLOR
+
+            const currentColor = hasNeighbors(INTERSECTED.cell)
+
+            
+            INTERSECTED.currentHex = currentColor ? callCOUPLECOLOR(currentColor):SELECTEDFIELDCOLOR
+
             //console.log(guiPlaced.getValue())
             //guiPlaced.setValue()
             //console.log(INTERSECTED.uuid)
@@ -234,7 +253,7 @@ function DeleteObjectUUID (uuid){
 
 function hasNeighbors(cell){
     var fields = [];
-    var _hasNeigbo = false
+    var _hasNeigbo = 0
     var cellobjects
     var countNeighbors = 0
     fields = placed.MapVec(cell)
@@ -248,12 +267,14 @@ function hasNeighbors(cell){
         //console.log(cellobjects)
         if (!cellobjects.length == 0){
             countNeighbors++
-            _hasNeigbo = true
+            _hasNeigbo = countNeighbors
+            //console.log("found")
+            return
         }
         
-        
     })
-    guiNeighbours.setValue(countNeighbors);
+
+    
     
     //console.log(cellobjects)
     //OldFields.map(element => )
@@ -270,12 +291,15 @@ function updateNeighbors(){
 
     var PlacedCell = placed.getStack();
     //console.log(PlacedCell)
-
+    var totalNeigborns = 0
     PlacedCell.forEach(element => {
-        if(hasNeighbors(element.cell)){
-            color = COUPLECOLOR
+        var nrNeighbors = hasNeighbors(element.cell)
+        totalNeigborns = totalNeigborns + nrNeighbors
+        if(nrNeighbors){
+//            console.log(callCOUPLECOLOR(nrNeighbors))
+            color = callCOUPLECOLOR(nrNeighbors)
         couple++
-
+        //console.log(couple)
             
         } else {
             color = SELECTEDFIELDCOLOR
@@ -283,11 +307,27 @@ function updateNeighbors(){
         changeHexColor(element.uuid,color)
 
     })
+    guiNeighbours.setValue(totalNeigborns);
 
     guiCouple.setValue(couple);
+    
+    var newSpeed = 0.001 + ( 0.001 *(totalNeigborns * 0.2)) 
+    
+    guiSpeed.setValue(newSpeed)
 
     return
 
+}
+
+function callCOUPLECOLOR(nummber){
+    var _nummber = Math.floor(nummber * 42.5) 
+// 0xFFAA22
+    if (_nummber <0) {
+        _nummber = 0xFFFFFF + _nummber + 1
+    }
+    const hex = "0x" + ("00" + _nummber.toString(16).toUpperCase()).substr(-8) + "00";
+
+    return hex
 }
 
 
