@@ -12,14 +12,13 @@ let INTERSECTED;
 const HOVERMOUSCOLOR = 0x0000aa ;
 const SELECTEDFIELDCOLOR = 0x005555 ;
 const HOVERSELECTEDMOUSCOLOR = 0xaa2222 ;
-const COUPLECOLOR = 0xFFAA22 ;
 
 let COLOR = 0x000000
 const CELLNAME_SINGEL = 'singel';
 const CELLNAME_COUPLE = 'couple';
-var OldFields=[]
 var mylatesttap;
 var doubleTaped;
+
 
 var helper = {
     speed: 0.001,
@@ -29,10 +28,10 @@ var helper = {
 };
 //New comment
 //console.log(helper)
-const gui = new dat.GUI();
-
 var placed = new Placed();
 
+// --------------------- GUI
+const gui = new dat.GUI();
 const guiEnergie = gui.add(helper,'energie')
 const debugFolder = gui.addFolder("Debug")
 const guiSpeed = debugFolder.add(helper,'speed');
@@ -50,6 +49,9 @@ stats.showPanel(0);
 document.body.appendChild(stats.dom);
 
 var scene = new THREE.Scene();
+scene.background = new THREE.Color( 0x00131c );
+scene.fog = new THREE.FogExp2( 0x00131c, 0.025 );
+
 let raycaster = new THREE.Raycaster();
 var camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 100 );
 camera.position.set( 0, 30, 30 );
@@ -111,6 +113,7 @@ controls.enablePan = false;
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.target.copy( grid.group.position );
+controls.maxPolarAngle = 1.3;
 //controls.mouseButtons = {
 //	LEFT: THREE.MOUSE.ROTATE,
 //	MIDDLE: THREE.MOUSE.DOLLY,
@@ -156,6 +159,7 @@ var animate = function () {
 
     renderer.render( scene, camera );
     controls.update();
+//    console.log(controls.getPolarAngle())
     stats.end();
     requestAnimationFrame( animate );
 };
@@ -187,30 +191,19 @@ function onMouseClick(event){
         //console.log(INTERSECTED.material.color)
         var color
         const uuid =  INTERSECTED.getChildUuid();
-        if (uuid === null) {
+        if (uuid === null && (placed.getStackLength() == 0 || hasNeighbors(INTERSECTED.cell))) {
+            
+            
             INTERSECTED.setChildUuid(setCube(INTERSECTED.position,INTERSECTED.material.color))
             //INTERSECTED.currentHex = SELECTEDFIELDCOLOR  
             //uuid = INTERSECTED.getChildUuid()
-            color = HOVERSELECTEDMOUSCOLOR;
-            //console.log(hasNeighbors(INTERSECTED.cell))
-
-            //INTERSECTED.currentHex = hasNeighbors(INTERSECTED.cell,true) ? COUPLECOLOR:SELECTEDFIELDCOLOR
-
+            placed.addTile(INTERSECTED.uuid,INTERSECTED.cell,INTERSECTED.energie)
             const currentColor = hasNeighbors(INTERSECTED.cell)
 
             
             INTERSECTED.currentHex = currentColor ? callCOUPLECOLOR(currentColor):SELECTEDFIELDCOLOR
-
-            //console.log(guiPlaced.getValue())
-            //guiPlaced.setValue()
-           // console.log(INTERSECTED)
-
-            placed.addTile(INTERSECTED.uuid,INTERSECTED.cell,INTERSECTED.energie)
-            //placed.addCounter()
-            //placed.stack.push(INTERSECTED.getChildUuid())
-            //console.log(placed.stack.indexOf(uuid))
+            color = HOVERSELECTEDMOUSCOLOR;
             
-           // console.log(placed.stack)   
         } else {
             //console.log(placed.stack.indexOf(uuid))
             
@@ -376,41 +369,5 @@ function GetUuIDObject(uuid){
     return  scene.getObjectByProperty('uuid', uuid)
 }
 
-function GetObjectByCell(cell){
-    var fieldList = []
-    //console.log(OldFields.length)
-    placed.getTiles(elements =>{
-        //console.log(elements)
-        if (!elements.length == 0) {
-            //console.log(elements)
-            elements.forEach(element => {
-        
-            let  fieldObject = scene.getObjectByProperty('uuid', element.uuid)
 
-                if (fieldObject.cell.equals(cell))
-                fieldList = fieldList.concat(fieldObject)
-            });
-        
-            //console.log(fieldList)
-        }
-       
-    } )
-
-   // OldFields.forEach(element=>{
-   //     console.log(element)
-   //console.log(fieldList)
-   // })
-   if (fieldList.length == 0)
-   return false
-   else
-   return fieldList
-}
-//var GridChildrens = scene.getObjectByProperty('name','GridObject')
-//console.log(scene)
-//console.log(GridChildrens.children)
-
-//GridChildrens.children.forEach(gridObject => {
-//    var temp = gridObject.getIdFromVec()
-//    console.log(temp)
-//});
 animate();

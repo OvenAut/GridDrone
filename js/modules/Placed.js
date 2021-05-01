@@ -73,6 +73,10 @@ Placed.prototype.getStack = function () {
     
     return  stack
 }
+Placed.prototype.getStackLength = function () {
+    
+    return  stack.length
+}
 
 Placed.prototype.getTiles = function (callback) {
     
