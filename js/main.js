@@ -9,9 +9,12 @@ import Placed from './modules/Placed.js';
 
 const pointer = new THREE.Vector2();
 let INTERSECTED;
-const HOVERMOUSCOLOR = 0x0000aa ;
-const SELECTEDFIELDCOLOR = 0x005555 ;
-const HOVERSELECTEDMOUSCOLOR = 0xaa2222 ;
+const HOVERMOUSCOLOR = 0x004422 ;
+const HOVERMOUSCOLORNOT = 0x442222 ;
+
+
+const SELECTEDFIELDCOLOR = 0x003322 ;
+const HOVERSELECTEDMOUSCOLOR = 0x112299 ;
 
 let COLOR = 0x000000
 const CELLNAME_SINGEL = 'singel';
@@ -144,10 +147,17 @@ var animate = function () {
             
             INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
             
-            COLOR = INTERSECTED.getChildUuid() === null? HOVERMOUSCOLOR : HOVERSELECTEDMOUSCOLOR;
+            COLOR = INTERSECTED.getChildUuid() === null? HOVERMOUSCOLORNOT : HOVERSELECTEDMOUSCOLOR;
+            //console.log(placed.getStackLength()==0)
+
+            if ((hasNeighbors(INTERSECTED.cell) || placed.getStackLength() == 0) && !INTERSECTED.getChildUuid()){
+               // console.log("he")
+                COLOR = HOVERMOUSCOLOR
+            }
+            //console.log(COLOR)
             SetInterselectedColor(COLOR)
             //INTERSECTED.material.emissive.setHex( color );
-
+            //console.log(INTERSECTED.cell)
         }
     } else {
         if ( INTERSECTED)
@@ -183,13 +193,16 @@ function onPointerMove( event ) {
 }
 
 function onMouseClick(event){
-   // console.log(event)
-    if (!INTERSECTED) return
+    //console.log(placed.getStackLength())
+    //console.log(hasNeighbors(INTERSECTED.cell))
+    //console.log(INTERSECTED.getChildUuid())
+    if (!INTERSECTED || (!(placed.getStackLength() == 0) && !hasNeighbors(INTERSECTED.cell) && (INTERSECTED.getChildUuid() == null))) return
+    //console.log("hello")
     if ( INTERSECTED.hasOwnProperty('echo') && (event.button == 2 || event.type == "dblclick" || doupletap(event.pointerType)) ) {
         //console.log(INTERSECTED.id)   
         //INTERSECTED.echo()
         //console.log(INTERSECTED.material.color)
-        var color
+        var color =INTERSECTED.currentHex
         const uuid =  INTERSECTED.getChildUuid();
         if (uuid === null && (placed.getStackLength() == 0 || hasNeighbors(INTERSECTED.cell))) {
             
@@ -204,7 +217,8 @@ function onMouseClick(event){
             INTERSECTED.currentHex = currentColor ? callCOUPLECOLOR(currentColor):SELECTEDFIELDCOLOR
             color = HOVERSELECTEDMOUSCOLOR;
             
-        } else {
+        } else 
+        {
             //console.log(placed.stack.indexOf(uuid))
             
             
@@ -215,8 +229,9 @@ function onMouseClick(event){
             //console.log(placed.stack.indexOf(INTERSECTED.getChildUuid()))
 
             
-            //console.log(placed)
+        
         }
+        //console.log(color)
         //ChangeTileColor(color)
         updateNeighbors()
         INTERSECTED.material.emissive.setHex( color );
@@ -338,7 +353,7 @@ function updateNeighbors(){
 
     guiCouple.setValue(couple);
     
-    var newSpeed = 0.001 + ( 0.001 *(totalEnegie*totalNeigborns * 0.0002)) 
+    var newSpeed = 0.001 + ( 0.0001 *(totalEnegie*totalNeigborns * 0.0002)) 
     
     guiSpeed.setValue(newSpeed)
 
