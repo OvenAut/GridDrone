@@ -1,5 +1,7 @@
 //import { Light } from 'three/build/three.module';
-import * as THREE from '/node_modules/three/build/three.module.js';
+import * as THREE from '../vendor/three.module.js';
+
+//import * as THREE from '/node_modules/three/build/three.module.js';
 
 class SpotLight extends THREE.DirectionalLight {
     constructor(color,intenity,d){

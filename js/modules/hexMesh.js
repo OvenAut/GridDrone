@@ -1,5 +1,5 @@
-import * as THREE from '/node_modules/three/build/three.module.js';
-
+//import * as THREE from '/node_modules/three/build/three.module.js';
+import * as THREE from '../vendor/three.module.js';
 class HexMesh extends THREE.Mesh {
 	constructor(geometry, material, color, cell) {
 		super(geometry,material,color);

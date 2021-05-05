@@ -1,4 +1,6 @@
-import * as THREE from '/node_modules/three/build/three.module.js';
+//import * as THREE from '/node_modules/three/build/three.module.js';
+import * as THREE from '../vendor/three.module.js';
+
 
     class MshStdBox extends THREE.Mesh {
         constructor(color, cell) {

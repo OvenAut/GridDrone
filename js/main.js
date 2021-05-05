@@ -1,7 +1,7 @@
-import * as THREE from '../node_modules/three/build/three.module.js';
-import Stats from '../node_modules/three/examples/jsm/libs/stats.module.js';
-import { OrbitControls } from '../node_modules/three/examples/jsm/controls/OrbitControls.js';
-import * as dat from '../node_modules/three/examples/jsm/libs/dat.gui.module.js';
+import * as THREE from './vendor/three.module.js';
+import Stats from './vendor/stats.module.js';
+import { OrbitControls } from './vendor/OrbitControls.js';
+import * as dat from './vendor/dat.gui.module.js';
 import HexGrid from './modules/HexGrid.js';
 import SpotLight from './modules/SpotLight.js';
 import MshStdBox from './modules/mshStdBox.js';
@@ -11,8 +11,6 @@ const pointer = new THREE.Vector2();
 let INTERSECTED;
 const HOVERMOUSCOLOR = 0x004422 ;
 const HOVERMOUSCOLORNOT = 0x442222 ;
-
-
 const SELECTEDFIELDCOLOR = 0x003322 ;
 const HOVERSELECTEDMOUSCOLOR = 0x112299 ;
 
@@ -21,7 +19,6 @@ const CELLNAME_SINGEL = 'singel';
 const CELLNAME_COUPLE = 'couple';
 var mylatesttap;
 var doubleTaped;
-
 
 var helper = {
     speed: 0.001,
