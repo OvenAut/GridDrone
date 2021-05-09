@@ -25,6 +25,7 @@ var helper = {
     placed: 0,
     couple: 0,
     energie:0,
+    seed:12345,
 };
 //New comment
 //console.log(helper)
@@ -33,6 +34,7 @@ var placed = new Placed();
 // --------------------- GUI
 const gui = new dat.GUI();
 const guiEnergie = gui.add(helper,'energie')
+const guiSeed = gui.add(helper,"seed")
 const debugFolder = gui.addFolder("Debug")
 const guiSpeed = debugFolder.add(helper,'speed');
 const guiPlaced = debugFolder.add(helper,'placed');
@@ -100,11 +102,14 @@ function setCube(position, color){
 var gridConfig = {
     size: 5,
     cellSize: 2,
-    cellScale: 0.95
+    cellScale: 0.95,
+    seed: helper.seed
 };
 
 let grid = new HexGrid(gridConfig);
 scene.add(grid.group);
+
+
 
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.minDistance = 5;

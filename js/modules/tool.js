@@ -1,7 +1,10 @@
 		//var lastTime = new Date().getTime();
 		//var innerHTML = document.querySelector("#info > h1");
 
+		import RNG from './RNG.js';
 
+		let _seed = 1234567;
+		
 
 class Tool {
 	constructor() {
@@ -10,30 +13,26 @@ class Tool {
 		this.lastTime = new Date().getTime();
 		this.documentInfo = document.querySelector("#info > h1");
 	}
-	randomizeRGB(base, range) {
+	randomizeRGB(base, range,randomInt) {
 		var rgb = base.split(',');
 		let color = 'rgb(';
 		var i, c;
-		var _range = this.randomInt(range);
+		
+		//var _range = seed
 		for (i = 0; i < 3; i++ ) {
-			c = parseInt(rgb[i]) + _range;
+			c = parseInt(rgb[i]) + randomInt;
 			if (c < 0) c = 0;
 			else if (c > 255) c = 255;
 			color += c + ',';
 		};
 		color = color.substring(0, color.length-1);
 		color += ')';
-		//console.log()
-		const energie = Math.floor((((range*0.5)-_range)/range)*100)
-		//console.log(energie) 
+		const energie = Math.floor((((range*0.5)-randomInt)/range)*100)
 		return {color:color,energie:energie}
 	}
 	
-	randomInt(min, max) {
-		if (arguments.length === 1) {
+	randomInt(min) {
 			return (Math.random() * min) - (min * 0.5) | 0;
-		}
-		return (Math.random() * (max - min + 1) + min) | 0;
 	}
 
 	text(text) {

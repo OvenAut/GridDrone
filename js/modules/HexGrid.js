@@ -8,6 +8,7 @@
 import * as THREE from '../vendor/three.module.js';
 import Hex from './hex.js';
 import Tool from './tool.js';
+import RNG from './RNG.js';
 
 
 var cellScale,cellSize = null;
@@ -84,7 +85,7 @@ class HexGrid {
 		});
 		
 		// create Hex instances and place them on the grid, and add them to the group for easy management
-
+		var _rng = new RNG(config.seed)//RNG(parseInt(seed))
 		i = 0;
 		for (x = -size; x < size + 1; x++) {
 			for (y = -size; y < size + 1; y++) {
@@ -93,7 +94,7 @@ class HexGrid {
 					c = new THREE.Vector3(x, y, z);
 					//c.w = null; // for storing which hex is representing this cell
 					//this.cells.push(c);
-					var colorObject = Tool.randomizeRGB('000, 100, 200', 200)
+					var colorObject = Tool.randomizeRGB('000, 100, 200', 200, _rng.nextRange(10,255))
 					hex = new Hex(	cellSize,
 						cellScale,
 						hexGeo,
