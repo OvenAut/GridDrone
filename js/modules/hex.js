@@ -44,6 +44,12 @@ class Hex { constructor (size, scale, geometry, color , cell, energie) {
 		
 		console.log(this.cell);
 	}
+	this.mesh.setRandomColor = function(color){
+		//console.log(color);
+		this.material.color.set(color.color);
+		this.energie = color.energie
+	}
+
 	this.mesh.setChildUuid = function(uuid){
 		this.childUuid = uuid
 		

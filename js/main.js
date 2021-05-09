@@ -20,12 +20,15 @@ const CELLNAME_COUPLE = 'couple';
 var mylatesttap;
 var doubleTaped;
 
+let _seed = window.localStorage.getItem('seed') || 12345
+console.log(_seed)
+
 var helper = {
     speed: 0.001,
     placed: 0,
     couple: 0,
     energie:0,
-    seed:12345,
+    seed:_seed,
 };
 //New comment
 //console.log(helper)
@@ -109,7 +112,11 @@ var gridConfig = {
 let grid = new HexGrid(gridConfig);
 scene.add(grid.group);
 
-
+guiSeed.onChange(element => {
+    //console.log(element)
+    grid.group.changeSeed(element)
+    window.localStorage.setItem('seed',element)
+})
 
 var controls = new OrbitControls( camera, renderer.domElement );
 controls.minDistance = 5;

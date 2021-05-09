@@ -12,6 +12,7 @@ import RNG from './RNG.js';
 
 
 var cellScale,cellSize = null;
+var _rng = new RNG()
 
 class HexGrid {
 	constructor(config) {
@@ -26,7 +27,13 @@ class HexGrid {
 		// the grid holds its own Group to manipulate and make it easy to add/remove from the scene
 		this.group = new THREE.Group();
 		this.group.name = "GridObject"
-
+		this.group.changeSeed = function(seed){
+			_rng.setSeed(seed)
+			//console.log(this)
+			this.children.forEach(element => {
+				element.setRandomColor(getRandom())
+			});
+		}
 		//this.RayGroup = config.RayGroup || [];
 		//this.selectColor = config.selectColor;
 		// construct a hex-shaped grid
@@ -63,6 +70,7 @@ class HexGrid {
 		var FLAT = 0;
 		var POINTY = 30 * 0.0174532925;
 		// create the skeleton of the hex
+		_rng.setSeed(config.seed)
 		for (i = 0; i < 6; i++) {
 			verts.push(this.createVert(FLAT, cellSize, i));
 		}
@@ -85,7 +93,7 @@ class HexGrid {
 		});
 		
 		// create Hex instances and place them on the grid, and add them to the group for easy management
-		var _rng = new RNG(config.seed)//RNG(parseInt(seed))
+		//RNG(parseInt(seed))
 		i = 0;
 		for (x = -size; x < size + 1; x++) {
 			for (y = -size; y < size + 1; y++) {
@@ -94,7 +102,7 @@ class HexGrid {
 					c = new THREE.Vector3(x, y, z);
 					//c.w = null; // for storing which hex is representing this cell
 					//this.cells.push(c);
-					var colorObject = Tool.randomizeRGB('000, 100, 200', 200, _rng.nextRange(10,255))
+					var colorObject = getRandom()
 					hex = new Hex(	cellSize,
 						cellScale,
 						hexGeo,
@@ -122,6 +130,10 @@ class HexGrid {
 		
 		//return this.meshes;
 	}
+}
+
+function getRandom(){
+	return Tool.randomizeRGB('000, 100, 200', 200, _rng.nextRange(10,255))
 }
 
 export default HexGrid;

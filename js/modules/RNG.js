@@ -3,9 +3,17 @@ function RNG(seed) {
     this.m = 0x80000000; // 2**31;
     this.a = 1103515245;
     this.c = 12345;
-  
-    this.state = seed ? seed : Math.floor(Math.random() * (this.m - 1));
+    this.seed = seed
+    this.updateState()
+
+
   }
+
+  RNG.prototype.updateState = function(){
+    this.state = this.seed ? this.seed : Math.floor(Math.random() * (this.m - 1));
+
+  }
+
   RNG.prototype.nextInt = function() {
     this.state = (this.a * this.state + this.c) % this.m;
     return this.state;
@@ -23,6 +31,11 @@ function RNG(seed) {
   }
   RNG.prototype.choice = function(array) {
     return array[this.nextRange(0, array.length)];
+  }
+
+  RNG.prototype.setSeed = function(seed){
+    this.seed = seed
+    this.updateState()
   }
 
   export default RNG;
