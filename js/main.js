@@ -21,10 +21,10 @@ var mylatesttap;
 var doubleTaped;
 
 let _seed = window.localStorage.getItem('seed') || 12345
-console.log(_seed)
-
+//console.log(_seed)
+const initSpeed = 0.001
 var helper = {
-    speed: 0.001,
+    speed: initSpeed,
     placed: 0,
     couple: 0,
     energie:0,
@@ -116,6 +116,7 @@ guiSeed.onChange(element => {
     //console.log(element)
     grid.group.changeSeed(element)
     window.localStorage.setItem('seed',element)
+    clearGrid()
 })
 
 var controls = new OrbitControls( camera, renderer.domElement );
@@ -202,9 +203,7 @@ function onPointerMove( event ) {
 }
 
 function onMouseClick(event){
-    //console.log(placed.getStackLength())
-    //console.log(hasNeighbors(INTERSECTED.cell))
-    //console.log(INTERSECTED.getChildUuid())
+
     if (!INTERSECTED || (!(placed.getStackLength() == 0) && !hasNeighbors(INTERSECTED.cell) && (INTERSECTED.getChildUuid() == null))) return
     //console.log("hello")
     if ( INTERSECTED.hasOwnProperty('echo') && (event.button == 2 || event.type == "dblclick" || doupletap(event.pointerType)) ) {
@@ -228,29 +227,14 @@ function onMouseClick(event){
             
         } else 
         {
-            //console.log(placed.stack.indexOf(uuid))
-            
-            
             DeleteObjectUUID(INTERSECTED.uuid)
+            INTERSECTED.setChildUuid(null)
             INTERSECTED.currentHex = 0x000000
             //placed.decCounter()
             color = HOVERMOUSCOLOR
-            //console.log(placed.stack.indexOf(INTERSECTED.getChildUuid()))
-
-            
-        
         }
-        //console.log(color)
-        //ChangeTileColor(color)
         updateNeighbors()
         INTERSECTED.material.emissive.setHex( color );
-        guiPlaced.setValue(placed.getCounter());
-
-
-    
-      //  placed.getTiles((stack)=>{
-      //      console.log(stack) 
-      //  })
     }
 }
 
@@ -279,20 +263,24 @@ function doupletap(eventType){
 }
 
 function DeleteObjectUUID (uuid){
-
-    //console.log(scene)
-
     const object = GetUuIDObject(uuid)
     //console.log(object)
-    //console.log(object.getChildUuid())
     const objectMesh = GetUuIDObject(object.getChildUuid())
     scene.remove( objectMesh );
-    INTERSECTED.setChildUuid(null)
+    object.setChildUuid(null)
     placed.clearTile(uuid)
-//    placed.getTiles(elements=>{
-//        console.log(elements)
-//    })
-    
+}
+
+function clearGrid(){
+    var oldStack = placed.getStack()
+    let stackLength = oldStack.length
+
+    for (let index = 0; index < stackLength; index++) {
+        const element = oldStack[0];
+        DeleteObjectUUID(element.uuid)
+        changeHexColor(element.uuid,0x000000)
+    }
+    updateGui(0,0,0)
 }
 
 
@@ -358,15 +346,28 @@ function updateNeighbors(){
 
     })
    // console.log(totalEnegie*totalNeigborns)
-    guiEnergie.setValue(totalEnegie*totalNeigborns);
+    //guiEnergie.setValue(totalEnegie*totalNeigborns);
+
+    //guiCouple.setValue(couple);
+    var newEnergie = totalEnegie*totalNeigborns
+    var newSpeed = 0.001 + ( 0.0001 *(totalEnegie*totalNeigborns * 0.0002)) 
+    
+    
+    updateGui(newEnergie,couple,newSpeed)
+
+    return
+
+}
+
+function updateGui(energie,couple,newSpeed){
+
+    var speed = newSpeed == 0 ? initSpeed : newSpeed
+    guiEnergie.setValue(energie);
 
     guiCouple.setValue(couple);
     
-    var newSpeed = 0.001 + ( 0.0001 *(totalEnegie*totalNeigborns * 0.0002)) 
-    
-    guiSpeed.setValue(newSpeed)
-
-    return
+    guiSpeed.setValue(speed)
+    guiPlaced.setValue(placed.getCounter());
 
 }
 

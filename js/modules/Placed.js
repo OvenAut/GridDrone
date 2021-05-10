@@ -70,6 +70,12 @@ Placed.prototype.clearTile = function (uuid) {
     //counter = stack.length
     //updateTile()
 }
+
+Placed.prototype.clearAll = function(){
+    stack = []
+}
+
+
 Placed.prototype.getStack = function () {
     
     return  stack
