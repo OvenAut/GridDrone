@@ -27,7 +27,11 @@ class Tool {
 		};
 		color = color.substring(0, color.length-1);
 		color += ')';
-		const energie = Math.floor((((range*0.5)-randomInt)/range)*100)
+
+		const energie = Math.floor((randomInt/255)*100)
+		
+		//Math.floor((((range*0.5)-randomInt)/range)*100)
+	//	console.log(energie)
 		return {color:color,energie:energie}
 	}
 	

@@ -58,20 +58,40 @@ Placed.prototype.addCube = function (position,color,uuid,cell,energie){
     this.addTile(uuid,cell,energie)
     const geometry = new THREE.ConeGeometry( 1.8, 1, 6 );
     const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color } ) );
-    object.position.copy(position)//.add(new THREE.Vector3(0,0.5,0));
-    //console.log(object.position)
-    object.rotateY(10)
-    var target = new THREE.Vector3(0,0.5,0).add(object.position)
-    console.log(target)
-    console.log(object.position)
+    object.position.copy(position).add(new THREE.Vector3(0,0.5,0));
+   // console.log(object)
+    object.scale.set(0,0,0)
     
-    object.tween = new TWEEN.Tween(object.position)
-        .to(target,500)
+    //object.scale.z = 0
+    object.rotateY(10)
+    //var target = new THREE.Vector3(0,0.5,0).add(object.position)
+    //console.log(target)
+    //console.log(object)
+    
+    //console.log(object.geometry.parameters.height)
+    
+    //new TWEEN.Tween(object.position)
+    //    .to(target,2000)
         //.onUpdate((element) => {
         //    console.log(element)
         //})
-        .easing(TWEEN.Easing.Cubic.Out)
+    //    .easing(TWEEN.Easing.Bounce.Out)
+    //    .start()
+
+//        console.log( object.geometry.getAttribute() )
+
+        new TWEEN.Tween(object.scale)
+        .to({x:1,y:1,z:1},5000)
+        //.onUpdate((element) => {
+        //    console.log(element)
+        //})
+        .easing(TWEEN.Easing.Bounce.Out)
         .start()
+        .onComplete(()=>{
+           var Newenergie = this.getEnergie(cell)
+            console.log(Newenergie)
+        })
+
 
     return object
 

@@ -68,7 +68,7 @@ renderer.shadowMap.enabled = true;
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-scene.add( new SpotLight(0xddffdd, 0.6, 100) );
+scene.add( new SpotLight(0xddffdd, 1.2, 100) );
 
 
 var geometry = new THREE.BoxGeometry( 1, 1, 1 );
@@ -213,7 +213,7 @@ function onMouseClick(event){
             INTERSECTED.setChildUuid(object.uuid)
             scene.add(object)
 
-            object.tween.start()
+            //object.tween.start()
             
                 
 
