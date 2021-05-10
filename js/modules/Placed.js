@@ -3,6 +3,7 @@
 //import { Vector2 } from 'three/build/three.module';
 //import * as THREE from '/node_modules/three/build/three.module.js';
 import * as THREE from '../vendor/three.module.js';
+import * as TWEEN  from '../vendor/tween.esm.js'
 
 let stack = []
 let stckObject = {
@@ -53,6 +54,30 @@ Placed.prototype.addTile = function (uuid,cell,energie) {
 
     //counter = stack    //updateTile()
 }
+Placed.prototype.addCube = function (position,color,uuid,cell,energie){
+    this.addTile(uuid,cell,energie)
+    const geometry = new THREE.ConeGeometry( 1.8, 1, 6 );
+    const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color } ) );
+    object.position.copy(position)//.add(new THREE.Vector3(0,0.5,0));
+    //console.log(object.position)
+    object.rotateY(10)
+    var target = new THREE.Vector3(0,0.5,0).add(object.position)
+    console.log(target)
+    console.log(object.position)
+    
+    object.tween = new TWEEN.Tween(object.position)
+        .to(target,500)
+        //.onUpdate((element) => {
+        //    console.log(element)
+        //})
+        .easing(TWEEN.Easing.Cubic.Out)
+        .start()
+
+    return object
+
+
+}
+
 Placed.prototype.clearTile = function (uuid) {
     
     for (var i=0; i < stack.length; i++){

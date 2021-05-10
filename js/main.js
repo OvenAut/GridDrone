@@ -6,6 +6,7 @@ import HexGrid from './modules/HexGrid.js';
 import SpotLight from './modules/SpotLight.js';
 import MshStdBox from './modules/mshStdBox.js';
 import Placed from './modules/Placed.js';
+import * as TWEEN  from './vendor/tween.esm.js'
 
 const pointer = new THREE.Vector2();
 let INTERSECTED;
@@ -89,19 +90,6 @@ var mat = new THREE.LineBasicMaterial( { color: 0xffffff } );
 var wireframe = new THREE.LineSegments( geo, mat );
 cube.add( wireframe );
 
-
-function setCube(position, color){
-
-    const geometry = new THREE.ConeGeometry( 1.8, 1, 6 );
-    const object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: color } ) );
-    object.position.copy(position).add(new THREE.Vector3(0,0.5,0));
-    //console.log(object.position)
-    object.rotateY(10)
-    scene.add( object );
-    return object.uuid;
-    
-}
-
 var gridConfig = {
     size: 5,
     cellSize: 2,
@@ -127,11 +115,6 @@ controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.target.copy( grid.group.position );
 controls.maxPolarAngle = 1.3;
-//controls.mouseButtons = {
-//	LEFT: THREE.MOUSE.ROTATE,
-//	MIDDLE: THREE.MOUSE.DOLLY,
-//	RIGHT: THREE.MOUSE.ROTATE
-//}
 
 function SetInterselectedColor(color){
     INTERSECTED.material.emissive.setHex( color );
@@ -176,7 +159,7 @@ var animate = function () {
         INTERSECTED = null;
     }
 
-
+    TWEEN.update()
     renderer.render( scene, camera );
     controls.update();
 //    console.log(controls.getPolarAngle())
@@ -215,10 +198,25 @@ function onMouseClick(event){
         if (uuid === null && (placed.getStackLength() == 0 || hasNeighbors(INTERSECTED.cell))) {
             
             
-            INTERSECTED.setChildUuid(setCube(INTERSECTED.position,INTERSECTED.material.color))
+            //INTERSECTED.setChildUuid(setCube(INTERSECTED.position,INTERSECTED.material.color))
             //INTERSECTED.currentHex = SELECTEDFIELDCOLOR  
             //uuid = INTERSECTED.getChildUuid()
-            placed.addTile(INTERSECTED.uuid,INTERSECTED.cell,INTERSECTED.energie)
+            const object = placed.addCube(
+                INTERSECTED.position,
+                INTERSECTED.material.color,
+                INTERSECTED.uuid,
+                INTERSECTED.cell,
+                INTERSECTED.energie
+                )
+            //placed.addTile(INTERSECTED.uuid,INTERSECTED.cell,INTERSECTED.energie)
+            
+            INTERSECTED.setChildUuid(object.uuid)
+            scene.add(object)
+
+            object.tween.start()
+            
+                
+
             const currentColor = hasNeighbors(INTERSECTED.cell)
 
             
@@ -290,40 +288,24 @@ function hasNeighbors(cell){
     var cellobjects
     var countNeighbors = 0
     fields = placed.MapVec(cell)
-    //console.log(fields)
-
 
     fields.forEach(vm =>{
-     //   console.log(vm)
      
         cellobjects = placed.getUuid(vm)
-        //console.log(cellobjects)
         if (cellobjects){
             countNeighbors++
             _hasNeigbo = countNeighbors
-            //console.log("found")
             return
         }
-        
     })
-
-    
-    
-    //console.log(cellobjects)
-    //OldFields.map(element => )
     return _hasNeigbo
 }
 
 function updateNeighbors(){
     var color 
     var couple = 0
-    //const object = GetUuIDObject(uuid)
-    //var GridChildrens = scene.getObjectByProperty('name','GridObject')
-
-    //var PlacedCell = GridChildrens.children.filter(cell => cell.getChildUuid())
 
     var PlacedCell = placed.getStack();
-    //console.log(PlacedCell)
     var totalNeigborns = 0
     var totalEnegie = 0
     PlacedCell.forEach(element => {
@@ -336,8 +318,6 @@ function updateNeighbors(){
             color = callCOUPLECOLOR(nrNeighbors)
         couple++
         
-        
-        //console.log(couple)
             
         } else {
             color = SELECTEDFIELDCOLOR
@@ -345,18 +325,12 @@ function updateNeighbors(){
         changeHexColor(element.uuid,color)
 
     })
-   // console.log(totalEnegie*totalNeigborns)
-    //guiEnergie.setValue(totalEnegie*totalNeigborns);
 
-    //guiCouple.setValue(couple);
     var newEnergie = totalEnegie*totalNeigborns
     var newSpeed = 0.001 + ( 0.0001 *(totalEnegie*totalNeigborns * 0.0002)) 
     
     
     updateGui(newEnergie,couple,newSpeed)
-
-    return
-
 }
 
 function updateGui(energie,couple,newSpeed){
